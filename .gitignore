@@ -1,0 +1,13 @@
+# .NET
+**/bin/
+**/obj/
+
+# Rider
+.idea/
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+.metadata
