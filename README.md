@@ -8,7 +8,7 @@ lib/
 │   ├── routing/                 # Configuración de rutas (ej. GoRouter)
 │   ├── theme/                   # Colores, tipografías, estilos globales
 │   └── errors/                  # Manejo de excepciones personalizadas
-│
+│   
 ├── features/                    # Módulos de la aplicación
 │   └── expenses/                # Ejemplo del módulo principal: Gastos
 │       │
