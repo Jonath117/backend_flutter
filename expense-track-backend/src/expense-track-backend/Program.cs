@@ -27,6 +27,9 @@ builder.Services.AddCategoriesInfrastructure(connectionString);
 builder.Services.AddExpensesInfrastructure(connectionString);
 builder.Services.AddReportingInfrastructure(connectionString);
 
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(Identity.Application.Features.Auth.Login.LoginUserQuery).Assembly);
+});
 
 // Add services to the container.
 
@@ -40,6 +43,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Identity Module");
+    });
 }
 
 //app.UseHttpsRedirection();
