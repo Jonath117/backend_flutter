@@ -1,4 +1,7 @@
+using Identity.Application.Interfaces;
+using Identity.Infrastructure.Authentication;
 using Identity.Infrastructure.Persistence;
+using Identity.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +13,11 @@ public static class DependencyInjection
     {
         services.AddDbContext<IdentityDbContext>(options =>
             options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IJwtProvider, JwtProvider>();
 
         return services;
     }
