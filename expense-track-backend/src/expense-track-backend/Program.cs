@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var envPath = Path.Combine(builder.Environment.ContentRootPath, ".env");
 Env.Load(envPath);
+builder.Configuration.AddEnvironmentVariables();
 
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
 var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD");
