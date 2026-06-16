@@ -56,6 +56,7 @@ public class User
             throw new DomainException("el nuevo nombre es igual al actual");
         
         Name = newName;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdateLastName(string newLastName)
@@ -67,5 +68,6 @@ public class User
             throw new DomainException("el nuevo apellido es igual al actual");
         
         LastName = newLastName;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
