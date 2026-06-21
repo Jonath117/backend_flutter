@@ -1,3 +1,4 @@
+import 'package:expense_track_frontend/features/identity/presentation/views/register_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,9 +36,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
         },
         data: (_) {
           if (state.isLoading == false && state.hasError == false) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Login exitoso')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Login exitoso'),
+                backgroundColor: Colors.green,
+              ),
+            );
             // Aquí usarías GoRouter para ir a la pantalla de Gastos: context.go('/home');
           }
         },
@@ -89,6 +93,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         style: TextStyle(fontSize: 18),
                       ),
                     ),
+            ),
+
+            SizedBox(height: 20.0),
+
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterView()),
+                );
+              },
+              child: const Text('¿No tienes cuenta? Registrate aqui'),
             ),
           ],
         ),
