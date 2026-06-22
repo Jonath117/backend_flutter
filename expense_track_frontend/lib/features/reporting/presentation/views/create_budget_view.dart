@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../viewmodels/reporting_viewmodel.dart';
 import '../../../categories/presentation/viewmodels/categories_viewmodel.dart';
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
 
 class CreateBudgetView extends ConsumerStatefulWidget {
   const CreateBudgetView({super.key});
@@ -64,7 +65,7 @@ class _CreateBudgetViewState extends ConsumerState<CreateBudgetView> {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ).showSnackBar(SnackBar(content: Text(getFriendlyErrorMessage(e)), backgroundColor: Colors.red));
         }
       }
     }
@@ -161,7 +162,7 @@ class _CreateBudgetViewState extends ConsumerState<CreateBudgetView> {
                   );
                 },
                 loading: () => const CircularProgressIndicator(),
-                error: (e, _) => Text('Error cargando categorías: $e'),
+                error: (e, _) => Text(getFriendlyErrorMessage(e), style: const TextStyle(color: Colors.red)),
               ),
               const SizedBox(height: 32),
               ElevatedButton(

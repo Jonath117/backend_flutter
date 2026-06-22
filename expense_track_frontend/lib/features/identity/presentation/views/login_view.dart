@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../viewmodels/auth_viewmodel.dart';
 import '../widgets/custom_text_field.dart';
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -33,7 +34,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ).showSnackBar(SnackBar(content: Text(getFriendlyErrorMessage(error))));
         },
         data: (_) {
           if (state.isLoading == false && state.hasError == false) {

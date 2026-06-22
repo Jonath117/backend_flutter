@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../viewmodels/register_viewmodel.dart';
 import '../widgets/custom_text_field.dart';
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
 
 class RegisterView extends ConsumerStatefulWidget {
   const RegisterView({super.key});
@@ -35,7 +36,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(error.toString()),
+              content: Text(getFriendlyErrorMessage(error)),
               backgroundColor: Colors.red,
             ),
           );

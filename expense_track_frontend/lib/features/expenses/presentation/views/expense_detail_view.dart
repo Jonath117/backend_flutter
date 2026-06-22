@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
 
 class ExpenseDetailView extends ConsumerWidget {
   final ExpenseModel expense;
@@ -70,7 +71,7 @@ class ExpenseDetailView extends ConsumerWidget {
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error al eliminar: $e')),
+                      SnackBar(content: Text(getFriendlyErrorMessage(e)), backgroundColor: Colors.red),
                     );
                   }
                 }

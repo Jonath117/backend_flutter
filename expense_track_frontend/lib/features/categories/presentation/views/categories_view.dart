@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../viewmodels/categories_viewmodel.dart';
 
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
+
 class CategoriesView extends ConsumerWidget {
   const CategoriesView({super.key});
 
@@ -12,7 +14,16 @@ class CategoriesView extends ConsumerWidget {
     return Scaffold(
       body: categoriesState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              getFriendlyErrorMessage(error),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ),
         data: (categories) {
           if (categories.isEmpty) {
             return const Center(child: Text('No tienes categorías aún.'));

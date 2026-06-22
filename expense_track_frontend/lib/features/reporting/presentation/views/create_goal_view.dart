@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../viewmodels/reporting_viewmodel.dart';
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
 
 class CreateGoalView extends ConsumerStatefulWidget {
   const CreateGoalView({super.key});
@@ -35,7 +36,7 @@ class _CreateGoalViewState extends ConsumerState<CreateGoalView> {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ).showSnackBar(SnackBar(content: Text(getFriendlyErrorMessage(e)), backgroundColor: Colors.red));
         }
       }
     }
