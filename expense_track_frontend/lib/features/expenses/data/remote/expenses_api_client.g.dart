@@ -135,20 +135,12 @@ class _ExpensesApiClient implements ExpensesApiClient {
   }
 
   @override
-  Future<UploadResponse> uploadPhoto(File file) async {
+  Future<UploadResponse> uploadPhoto(MultipartFile file) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
-    _data.files.add(
-      MapEntry(
-        'file',
-        MultipartFile.fromFileSync(
-          file.path,
-          filename: file.path.split(Platform.pathSeparator).last,
-        ),
-      ),
-    );
+    _data.files.add(MapEntry('file', file));
     final _options = _setStreamType<UploadResponse>(
       Options(
             method: 'POST',

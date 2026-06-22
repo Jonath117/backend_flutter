@@ -88,8 +88,16 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseStaticFiles();
+var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+if (!Directory.Exists(wwwrootPath)) Directory.CreateDirectory(wwwrootPath);
 app.UseCors("AllowAllLocal");
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+    }
+});
 
 app.UseAuthentication();
 

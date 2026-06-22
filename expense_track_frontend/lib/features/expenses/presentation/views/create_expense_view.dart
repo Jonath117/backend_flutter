@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 
 class CreateExpenseView extends ConsumerStatefulWidget {
@@ -21,7 +22,7 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
   final _descriptionController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String? _selectedCategoryId;
-  File? _selectedImage;
+  XFile? _selectedImage;
   bool _isUploading = false;
 
   @override
@@ -50,7 +51,7 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImage = pickedFile;
       });
     }
   }
@@ -65,7 +66,9 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
       try {
         String? finalPhotoUrl;
         if (_selectedImage != null) {
-          finalPhotoUrl = await ref.read(expensesViewModelProvider.notifier).uploadPhoto(_selectedImage);
+          finalPhotoUrl = await ref
+              .read(expensesViewModelProvider.notifier)
+              .uploadPhoto(_selectedImage!);
         }
 
         await ref
@@ -82,7 +85,9 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       } finally {
         if (mounted) {
@@ -90,7 +95,9 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
         }
       }
     } else if (_selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, selecciona una categoría')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, selecciona una categoría')),
+      );
     }
   }
 
@@ -178,26 +185,41 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(_selectedImage == null 
-                        ? 'Sin foto adjunta' 
-                        : 'Foto seleccionada: ${_selectedImage!.path.split('/').last}'),
+                    child: Text(
+                      _selectedImage == null
+                          ? 'Sin foto adjunta'
+                          : 'Foto seleccionada: ${_selectedImage!.name}',
+                    ),
                   ),
                   TextButton.icon(
                     icon: const Icon(Icons.image),
                     label: const Text('Subir Foto'),
                     onPressed: _pickImage,
-                  )
+                  ),
                 ],
               ),
               if (_selectedImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Image.file(_selectedImage!, height: 150, fit: BoxFit.cover),
+                  child: kIsWeb
+                      ? Image.network(
+                          _selectedImage!.path,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(_selectedImage!.path),
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               const SizedBox(height: 32),
-              _isUploading 
-                  ? const Center(child: CircularProgressIndicator()) 
-                  : ElevatedButton(onPressed: _submit, child: const Text('Crear')),
+              _isUploading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _submit,
+                      child: const Text('Crear'),
+                    ),
             ],
           ),
         ),

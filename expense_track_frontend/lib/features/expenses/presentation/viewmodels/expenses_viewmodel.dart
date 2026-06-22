@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:expense_track_frontend/features/expenses/data/models/expense_model.dart';
 import 'package:expense_track_frontend/features/expenses/data/remote/expenses_api_client.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:expense_track_frontend/features/expenses/data/repositories/expense_repository_impl.dart';
 import 'package:expense_track_frontend/features/expenses/domain/repositories/expense_repository.dart';
 import 'package:expense_track_frontend/features/identity/presentation/viewmodels/auth_viewmodel.dart';
@@ -99,7 +100,7 @@ class ExpensesViewModel extends AsyncNotifier<List<ExpenseModel>> {
     }
   }
 
-  Future<String> uploadPhoto(dynamic file) async {
+  Future<String> uploadPhoto(XFile file) async {
     return await _repository.uploadPhoto(file);
   }
 }

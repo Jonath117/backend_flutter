@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
-import 'dart:io';
 import '../models/expense_model.dart';
 
 part 'expenses_api_client.g.dart';
@@ -19,12 +18,15 @@ abstract class ExpensesApiClient {
   Future<void> createExpense(@Body() Map<String, dynamic> body);
 
   @PUT("/api/expenses/{id}")
-  Future<void> updateExpense(@Path("id") String id, @Body() Map<String, dynamic> body);
+  Future<void> updateExpense(
+    @Path("id") String id,
+    @Body() Map<String, dynamic> body,
+  );
 
   @DELETE("/api/expenses/{id}")
   Future<void> deleteExpense(@Path("id") String id);
 
   @POST("/api/expenses/upload-photo")
   @MultiPart()
-  Future<UploadResponse> uploadPhoto(@Part(name: "file") File file);
+  Future<UploadResponse> uploadPhoto(@Part(name: "file") MultipartFile file);
 }

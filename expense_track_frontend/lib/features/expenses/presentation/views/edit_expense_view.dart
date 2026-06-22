@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
 
 class EditExpenseView extends ConsumerStatefulWidget {
   final ExpenseModel expense;
@@ -20,9 +23,11 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _amountController;
   late TextEditingController _descriptionController;
-  late TextEditingController _photoUrlController;
   late DateTime _selectedDate;
   late String _selectedCategoryId;
+  XFile? _selectedImage;
+  String? _existingPhotoUrl;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -33,9 +38,7 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
     _descriptionController = TextEditingController(
       text: widget.expense.title,
     );
-    _photoUrlController = TextEditingController(
-      text: widget.expense.images.isNotEmpty ? widget.expense.images.first : '',
-    );
+    _existingPhotoUrl = widget.expense.images.isNotEmpty ? widget.expense.images.first : null;
     _selectedDate = widget.expense.expenseDate;
     _selectedCategoryId = widget.expense.categoryId;
   }
@@ -44,7 +47,6 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
   void dispose() {
     _amountController.dispose();
     _descriptionController.dispose();
-    _photoUrlController.dispose();
     super.dispose();
   }
 
@@ -62,15 +64,30 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = pickedFile;
+        _existingPhotoUrl = null;
+      });
+    }
+  }
+
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       final amount = double.parse(_amountController.text);
       final description = _descriptionController.text;
-      final photoUrl = _photoUrlController.text.isEmpty
-          ? null
-          : _photoUrlController.text;
+
+      setState(() => _isUploading = true);
 
       try {
+        String? newPhotoUrl;
+        if (_selectedImage != null) {
+          newPhotoUrl = await ref.read(expensesViewModelProvider.notifier).uploadPhoto(_selectedImage!);
+        }
+
         await ref
             .read(expensesViewModelProvider.notifier)
             .updateExpense(
@@ -79,16 +96,18 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
               description,
               _selectedDate,
               _selectedCategoryId,
-              photoUrl,
+              newPhotoUrl,
             );
         if (mounted) {
           context.pop();
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isUploading = false);
         }
       }
     }
@@ -177,17 +196,41 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
                 orElse: () => const CircularProgressIndicator(),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _photoUrlController,
-                decoration: const InputDecoration(
-                  labelText: 'URL de Foto (opcional)',
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(_selectedImage == null && _existingPhotoUrl == null
+                        ? 'Sin foto adjunta' 
+                        : _existingPhotoUrl != null 
+                            ? 'Foto existente adjunta' 
+                            : 'Foto seleccionada: ${_selectedImage!.name}'),
+                  ),
+                  TextButton.icon(
+                    icon: const Icon(Icons.image),
+                    label: const Text('Subir Foto'),
+                    onPressed: _pickImage,
+                  )
+                ],
+              ),
+              if (_selectedImage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: kIsWeb 
+                      ? Image.network(_selectedImage!.path, height: 150, fit: BoxFit.cover)
+                      : Image.file(File(_selectedImage!.path), height: 150, fit: BoxFit.cover),
+                )
+              else if (_existingPhotoUrl != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.network(_existingPhotoUrl!, height: 150, fit: BoxFit.cover),
                 ),
-              ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _submit,
-                child: const Text('Guardar Cambios'),
-              ),
+              _isUploading 
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _submit,
+                      child: const Text('Guardar Cambios'),
+                    ),
             ],
           ),
         ),
