@@ -109,4 +109,43 @@ public class GoalsController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+    [HttpPost("{id:guid}/add-funds")]
+    public async Task<IActionResult> AddFunds(Guid id, [FromBody] GoalFundsRequest request)
+    {
+        try
+        {
+            var userId = User.GetUserId();
+            var command = new AddFundsToGoalCommand(id, userId, request.Amount);
+            await _mediator.Send(command);
+            return Ok(new { Message = "Fondos agregados correctamente" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("{id:guid}/withdraw-funds")]
+    public async Task<IActionResult> WithdrawFunds(Guid id, [FromBody] GoalFundsRequest request)
+    {
+        try
+        {
+            var userId = User.GetUserId();
+            var command = new WithdrawFundsFromGoalCommand(id, userId, request.Amount);
+            await _mediator.Send(command);
+            return Ok(new { Message = "Fondos retirados correctamente" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }

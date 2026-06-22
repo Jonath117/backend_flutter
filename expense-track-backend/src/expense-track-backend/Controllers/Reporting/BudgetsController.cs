@@ -51,7 +51,8 @@ public class BudgetsController : ControllerBase
                 request.Name,
                 request.MonthlyLimit,
                 startDate,
-                endDate
+                endDate,
+                request.CategoryIds
             );
 
             var id = await _mediator.Send(command);
@@ -78,7 +79,8 @@ public class BudgetsController : ControllerBase
                 request.Name,
                 request.MonthlyLimit,
                 startDate,
-                endDate
+                endDate,
+                request.CategoryIds
             );
 
             await _mediator.Send(command);

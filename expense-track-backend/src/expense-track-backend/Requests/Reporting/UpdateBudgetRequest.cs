@@ -6,4 +6,5 @@ public class UpdateBudgetRequest
     public decimal MonthlyLimit { get; set; }
     public string StartDate { get; set; } = string.Empty;
     public string? EndDate { get; set; }
+    public List<Guid> CategoryIds { get; set; } = new();
 }
