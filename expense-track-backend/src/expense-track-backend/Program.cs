@@ -3,6 +3,7 @@ using Categories.Application;
 using Categories.Infrastructure;
 using DotNetEnv;
 using expense_track_backend.Persistence;
+using Expenses.Application;
 using Expenses.Infrastructure;
 using Identity.Application;
 using Identity.Infrastructure;
@@ -55,14 +56,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
 builder.Services.AddIdentityInfrastructure(connectionString);
-
-
 builder.Services.AddCategoriesInfrastructure(connectionString);
 builder.Services.AddExpensesInfrastructure(connectionString);
 builder.Services.AddReportingInfrastructure(connectionString);
 
 builder.Services.AddIdentityApplication();
 builder.Services.AddCategoriesApplication();
+builder.Services.AddExpensesApplication();
 
 builder.Services.AddCors(options =>
 {
