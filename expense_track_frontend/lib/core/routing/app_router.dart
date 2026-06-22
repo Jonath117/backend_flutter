@@ -5,7 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'main_layout.dart';
 import '../../features/identity/presentation/views/login_view.dart';
 import '../../features/categories/presentation/views/categories_view.dart';
-
+import '../../features/expenses/presentation/views/expenses_list_view.dart';
+import '../../features/expenses/presentation/views/create_expense_view.dart';
+import '../../features/expenses/presentation/views/edit_expense_view.dart';
+import '../../features/expenses/presentation/views/expense_detail_view.dart';
+import '../../features/expenses/data/models/expense_model.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _sectionANavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'sectionANav',
@@ -34,10 +38,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/expenses',
-                builder: (context, state) => Scaffold(
-                  appBar: AppBar(title: const Text('Mis Gastos')),
-                  body: const Center(child: Text('Pantalla de Gastos')),
-                ),
+                builder: (context, state) => const ExpensesListView(),
+                routes: [
+                  GoRoute(
+                    path: 'create',
+                    builder: (context, state) => const CreateExpenseView(),
+                  ),
+                  GoRoute(
+                    path: 'edit',
+                    builder: (context, state) {
+                      final expense = state.extra as ExpenseModel;
+                      return EditExpenseView(expense: expense);
+                    },
+                  ),
+                  GoRoute(
+                    path: 'detail',
+                    builder: (context, state) {
+                      final expense = state.extra as ExpenseModel;
+                      return ExpenseDetailView(expense: expense);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
