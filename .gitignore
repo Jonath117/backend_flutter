@@ -15,3 +15,5 @@ build/
 
 # .env
 .env
+
+expense-track-backend/src/expense-track-backend/wwwroot/uploads/
