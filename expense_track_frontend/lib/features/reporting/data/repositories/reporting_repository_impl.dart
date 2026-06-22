@@ -27,12 +27,14 @@ class ReportingRepositoryImpl implements ReportingRepository {
     double monthlyLimit,
     DateTime startDate,
     DateTime? endDate,
+    List<String> categoryIds,
   ) async {
     final body = {
       "name": name,
       "monthlyLimit": monthlyLimit,
       "startDate": startDate.toIso8601String().split('T')[0],
       "endDate": endDate?.toIso8601String().split('T')[0],
+      "categoryIds": categoryIds
     };
     await _apiClient.createBudget(body);
   }
@@ -44,12 +46,14 @@ class ReportingRepositoryImpl implements ReportingRepository {
     double monthlyLimit,
     DateTime startDate,
     DateTime? endDate,
+    List<String> categoryIds,
   ) async {
     final body = {
       "name": name,
       "monthlyLimit": monthlyLimit,
       "startDate": startDate.toIso8601String().split('T')[0],
       "endDate": endDate?.toIso8601String().split('T')[0],
+      "categoryIds": categoryIds
     };
     await _apiClient.updateBudget(id, body);
   }
@@ -96,5 +100,15 @@ class ReportingRepositoryImpl implements ReportingRepository {
   @override
   Future<void> deleteGoal(String id) async {
     await _apiClient.deleteGoal(id);
+  }
+
+  @override
+  Future<void> addFundsToGoal(String id, double amount) async {
+    await _apiClient.addFundsToGoal(id, {"amount": amount});
+  }
+
+  @override
+  Future<void> withdrawFundsFromGoal(String id, double amount) async {
+    await _apiClient.withdrawFundsFromGoal(id, {"amount": amount});
   }
 }

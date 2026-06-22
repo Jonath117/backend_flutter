@@ -35,8 +35,9 @@ class BudgetsViewModel extends StateNotifier<AsyncValue<List<BudgetModel>>> {
     double monthlyLimit,
     DateTime startDate,
     DateTime? endDate,
+    List<String> categoryIds,
   ) async {
-    await _repository.createBudget(name, monthlyLimit, startDate, endDate);
+    await _repository.createBudget(name, monthlyLimit, startDate, endDate, categoryIds);
     await fetchBudgets();
   }
 
@@ -46,8 +47,9 @@ class BudgetsViewModel extends StateNotifier<AsyncValue<List<BudgetModel>>> {
     double monthlyLimit,
     DateTime startDate,
     DateTime? endDate,
+    List<String> categoryIds,
   ) async {
-    await _repository.updateBudget(id, name, monthlyLimit, startDate, endDate);
+    await _repository.updateBudget(id, name, monthlyLimit, startDate, endDate, categoryIds);
     await fetchBudgets();
   }
 
@@ -101,6 +103,16 @@ class GoalsViewModel extends StateNotifier<AsyncValue<List<GoalModel>>> {
 
   Future<void> deleteGoal(String id) async {
     await _repository.deleteGoal(id);
+    await fetchGoals();
+  }
+
+  Future<void> addFundsToGoal(String id, double amount) async {
+    await _repository.addFundsToGoal(id, amount);
+    await fetchGoals();
+  }
+
+  Future<void> withdrawFundsFromGoal(String id, double amount) async {
+    await _repository.withdrawFundsFromGoal(id, amount);
     await fetchGoals();
   }
 }

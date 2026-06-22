@@ -27,15 +27,15 @@ class _CreateGoalViewState extends ConsumerState<CreateGoalView> {
     if (_formKey.currentState!.validate()) {
       try {
         final target = double.parse(_targetController.text);
-        await ref.read(goalsViewModelProvider.notifier).createGoal(
-          _nameController.text,
-          target,
-          null, // Opcionalmente podríamos añadir un DatePicker para targetDate
-        );
+        await ref
+            .read(goalsViewModelProvider.notifier)
+            .createGoal(_nameController.text, target, null);
         if (mounted) context.pop();
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -53,15 +53,22 @@ class _CreateGoalViewState extends ConsumerState<CreateGoalView> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre de la Meta'),
-                validator: (value) => value == null || value.isEmpty ? 'Requerido' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre de la Meta',
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Requerido' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _targetController,
                 decoration: const InputDecoration(labelText: 'Monto Objetivo'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Requerido';
                   if (double.tryParse(value) == null) return 'Número inválido';

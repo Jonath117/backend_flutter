@@ -32,4 +32,10 @@ abstract class ReportingApiClient {
 
   @DELETE("/api/goals/{id}")
   Future<void> deleteGoal(@Path("id") String id);
+
+  @POST("/api/goals/{id}/add-funds")
+  Future<void> addFundsToGoal(@Path("id") String id, @Body() Map<String, dynamic> body);
+
+  @POST("/api/goals/{id}/withdraw-funds")
+  Future<void> withdrawFundsFromGoal(@Path("id") String id, @Body() Map<String, dynamic> body);
 }
