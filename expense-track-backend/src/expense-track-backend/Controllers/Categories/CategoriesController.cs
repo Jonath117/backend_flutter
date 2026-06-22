@@ -5,6 +5,7 @@ using expense_track_backend.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using expense_track_backend.Extensions;
 
 namespace expense_track_backend.Controllers.Categories;
 
@@ -25,11 +26,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdString))
-                return Unauthorized("token invalido");
-
-            var userId = Guid.Parse(userIdString);
+            var userId = User.GetUserId();
 
             var query = new GetCategoriesQuery(userId);
             var categories = await _mediator.Send(query);
@@ -47,12 +44,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
-            if (string.IsNullOrEmpty(userIdString))
-                return Unauthorized("Token inválido.");
-
-            var userId = Guid.Parse(userIdString);
+            var userId = User.GetUserId();
 
             var command = new CreateCategoryCommand(
                 userId,
