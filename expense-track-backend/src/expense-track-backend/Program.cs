@@ -10,6 +10,7 @@ using Identity.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Reporting.Application;
 using Reporting.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +64,7 @@ builder.Services.AddReportingInfrastructure(connectionString);
 builder.Services.AddIdentityApplication();
 builder.Services.AddCategoriesApplication();
 builder.Services.AddExpensesApplication();
+builder.Services.AddReportingApplication();
 
 builder.Services.AddCors(options =>
 {
