@@ -20,6 +20,7 @@ dependencies:
   http_parser: ^4.1.2
   finance_design_system:
     path: ../../finance_design_system
+  jwt_decoder: ^2.0.1
 
 
 dev_dependencies:
