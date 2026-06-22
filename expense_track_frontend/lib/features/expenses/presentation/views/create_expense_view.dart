@@ -56,6 +56,37 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
     }
   }
 
+  void _showFullImage(BuildContext context, String? networkUrl, File? file) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(10),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4,
+              child: networkUrl != null 
+                  ? Image.network(networkUrl, fit: BoxFit.contain)
+                  : Image.file(file!, fit: BoxFit.contain),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30, shadows: [Shadow(color: Colors.black, blurRadius: 10)]),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _submit() async {
     if (_formKey.currentState!.validate() && _selectedCategoryId != null) {
       final amount = double.parse(_amountController.text);
@@ -201,17 +232,12 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
               if (_selectedImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: kIsWeb
-                      ? Image.network(
-                          _selectedImage!.path,
-                          height: 150,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
-                          File(_selectedImage!.path),
-                          height: 150,
-                          fit: BoxFit.cover,
-                        ),
+                  child: GestureDetector(
+                    onTap: () => _showFullImage(context, kIsWeb ? _selectedImage!.path : null, kIsWeb ? null : File(_selectedImage!.path)),
+                    child: kIsWeb 
+                        ? Image.network(_selectedImage!.path, height: 150, fit: BoxFit.cover)
+                        : Image.file(File(_selectedImage!.path), height: 150, fit: BoxFit.cover),
+                  ),
                 ),
               const SizedBox(height: 32),
               _isUploading

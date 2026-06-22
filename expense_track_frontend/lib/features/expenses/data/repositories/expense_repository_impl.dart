@@ -3,6 +3,7 @@ import 'package:expense_track_frontend/features/expenses/data/remote/expenses_ap
 import 'package:expense_track_frontend/features/expenses/domain/repositories/expense_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final ExpensesApiClient _apiClient;
@@ -55,7 +56,11 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<String> uploadPhoto(XFile file) async {
     final bytes = await file.readAsBytes();
-    final multipartFile = MultipartFile.fromBytes(bytes, filename: file.name);
+    final multipartFile = MultipartFile.fromBytes(
+      bytes,
+      filename: file.name,
+      contentType: MediaType("image", "jpeg"),
+    );
     final response = await _apiClient.uploadPhoto(multipartFile);
     return response.url;
   }

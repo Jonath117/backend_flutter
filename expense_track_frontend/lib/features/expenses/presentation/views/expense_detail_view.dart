@@ -85,18 +85,21 @@ class ExpenseDetailView extends ConsumerWidget {
           children: [
             if (expense.images.isNotEmpty)
               Center(
-                child: Image.network(
-                  expense.images.first,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image, size: 100),
+                child: GestureDetector(
+                  onTap: () => _showFullImage(context, expense.images.first),
+                  child: Image.network(
+                    expense.images.first,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.broken_image, size: 100),
+                  ),
                 ),
               ),
             const SizedBox(height: 24),
             Text(
-              'Bs${expense.amount.toStringAsFixed(2)}',
+              'Bs ${expense.amount.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,
@@ -143,6 +146,40 @@ class ExpenseDetailView extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showFullImage(BuildContext context, String networkUrl) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(10),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4,
+              child: Image.network(networkUrl, fit: BoxFit.contain),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.white,
+                  size: 30,
+                  shadows: [Shadow(color: Colors.black, blurRadius: 10)],
+                ),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
