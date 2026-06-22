@@ -1,9 +1,14 @@
+using System.Text;
+using Categories.Application;
 using Categories.Infrastructure;
 using DotNetEnv;
 using expense_track_backend.Persistence;
 using Expenses.Infrastructure;
+using Identity.Application;
 using Identity.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Reporting.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,17 +24,45 @@ var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
 
 var connectionString = $"Host=localhost;Port={dbPort};Database={dbName};Username={dbUser};Password={dbPass}";
 
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+                ?? throw new InvalidOperationException("Falta JWT_SECRET");
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "ExpenseTrackerAPI";
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "ExpenseTrackerClients";
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)) 
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
 builder.Services.AddIdentityInfrastructure(connectionString);
+
+
 builder.Services.AddCategoriesInfrastructure(connectionString);
 builder.Services.AddExpensesInfrastructure(connectionString);
 builder.Services.AddReportingInfrastructure(connectionString);
 
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssembly(typeof(Identity.Application.Features.Auth.Login.LoginUserQuery).Assembly);
-});
+builder.Services.AddIdentityApplication();
+builder.Services.AddCategoriesApplication();
 
 builder.Services.AddCors(options =>
 {
@@ -60,6 +93,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAllLocal");
+
+app.UseAuthentication();
 
 //app.UseHttpsRedirection();
 
