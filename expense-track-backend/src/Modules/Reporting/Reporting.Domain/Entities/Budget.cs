@@ -59,4 +59,19 @@ public class Budget
         _budgetCategories.Remove(category);
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void Update(string name, decimal monthlyLimit, DateOnly startDate, DateOnly? endDate)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("El nombre del presupuesto no puede estar vacío.");
+        if (monthlyLimit <= 0) throw new ArgumentException("El límite mensual debe ser estrictamente mayor a cero.");
+        
+        if (endDate.HasValue && endDate.Value <= startDate)
+            throw new ArgumentException("La fecha de finalización debe ser posterior a la fecha de inicio.");
+
+        Name = name.Trim();
+        MonthlyLimit = monthlyLimit;
+        StartDate = startDate;
+        EndDate = endDate;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

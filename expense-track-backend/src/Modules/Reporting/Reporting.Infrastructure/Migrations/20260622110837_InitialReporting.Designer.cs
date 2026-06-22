@@ -12,8 +12,8 @@ using Reporting.Infrastructure.Persistence;
 namespace Reporting.Infrastructure.Migrations
 {
     [DbContext(typeof(ReportingDbContext))]
-    [Migration("20260622070350_InitialReportingMigration")]
-    partial class InitialReportingMigration
+    [Migration("20260622110837_InitialReporting")]
+    partial class InitialReporting
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
