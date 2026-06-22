@@ -10,6 +10,9 @@ import '../../features/expenses/presentation/views/create_expense_view.dart';
 import '../../features/expenses/presentation/views/edit_expense_view.dart';
 import '../../features/expenses/presentation/views/expense_detail_view.dart';
 import '../../features/expenses/data/models/expense_model.dart';
+import '../../features/reporting/presentation/views/reporting_dashboard_view.dart';
+import '../../features/reporting/presentation/views/create_budget_view.dart';
+import '../../features/reporting/presentation/views/create_goal_view.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _sectionANavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'sectionANav',
@@ -79,10 +82,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/reports',
-                builder: (context, state) => Scaffold(
-                  appBar: AppBar(title: const Text('Dashboard')),
-                  body: const Center(child: Text('Pantalla de Reportes')),
-                ),
+                builder: (context, state) => const ReportingDashboardView(),
+                routes: [
+                  GoRoute(
+                    path: 'budgets/create',
+                    builder: (context, state) => const CreateBudgetView(),
+                  ),
+                  GoRoute(
+                    path: 'goals/create',
+                    builder: (context, state) => const CreateGoalView(),
+                  ),
+                ],
               ),
             ],
           ),
