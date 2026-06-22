@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CreateExpenseView extends ConsumerStatefulWidget {
   const CreateExpenseView({super.key});
@@ -17,15 +19,15 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _photoUrlController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String? _selectedCategoryId;
+  File? _selectedImage;
+  bool _isUploading = false;
 
   @override
   void dispose() {
     _amountController.dispose();
     _descriptionController.dispose();
-    _photoUrlController.dispose();
     super.dispose();
   }
 
@@ -43,15 +45,29 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
   void _submit() async {
     if (_formKey.currentState!.validate() && _selectedCategoryId != null) {
       final amount = double.parse(_amountController.text);
       final description = _descriptionController.text;
-      final photoUrl = _photoUrlController.text.isEmpty
-          ? null
-          : _photoUrlController.text;
+
+      setState(() => _isUploading = true);
 
       try {
+        String? finalPhotoUrl;
+        if (_selectedImage != null) {
+          finalPhotoUrl = await ref.read(expensesViewModelProvider.notifier).uploadPhoto(_selectedImage);
+        }
+
         await ref
             .read(expensesViewModelProvider.notifier)
             .addExpense(
@@ -59,22 +75,22 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
               description,
               _selectedDate,
               _selectedCategoryId!,
-              photoUrl,
+              finalPhotoUrl,
             );
         if (mounted) {
           context.pop();
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isUploading = false);
         }
       }
     } else if (_selectedCategoryId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Por favor, selecciona una categoría')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, selecciona una categoría')));
     }
   }
 
@@ -159,14 +175,29 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
                 orElse: () => const CircularProgressIndicator(),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _photoUrlController,
-                decoration: const InputDecoration(
-                  labelText: 'URL de Foto (opcional)',
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(_selectedImage == null 
+                        ? 'Sin foto adjunta' 
+                        : 'Foto seleccionada: ${_selectedImage!.path.split('/').last}'),
+                  ),
+                  TextButton.icon(
+                    icon: const Icon(Icons.image),
+                    label: const Text('Subir Foto'),
+                    onPressed: _pickImage,
+                  )
+                ],
               ),
+              if (_selectedImage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.file(_selectedImage!, height: 150, fit: BoxFit.cover),
+                ),
               const SizedBox(height: 32),
-              ElevatedButton(onPressed: _submit, child: const Text('Crear')),
+              _isUploading 
+                  ? const Center(child: CircularProgressIndicator()) 
+                  : ElevatedButton(onPressed: _submit, child: const Text('Crear')),
             ],
           ),
         ),

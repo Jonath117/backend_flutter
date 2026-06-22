@@ -28,3 +28,9 @@ Map<String, dynamic> _$ExpenseModelToJson(ExpenseModel instance) =>
       'categoryId': instance.categoryId,
       'images': instance.images,
     };
+
+UploadResponse _$UploadResponseFromJson(Map<String, dynamic> json) =>
+    UploadResponse(url: json['url'] as String);
+
+Map<String, dynamic> _$UploadResponseToJson(UploadResponse instance) =>
+    <String, dynamic>{'url': instance.url};

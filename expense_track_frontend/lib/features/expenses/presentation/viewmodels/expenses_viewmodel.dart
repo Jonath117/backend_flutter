@@ -98,6 +98,10 @@ class ExpensesViewModel extends AsyncNotifier<List<ExpenseModel>> {
       rethrow;
     }
   }
+
+  Future<String> uploadPhoto(dynamic file) async {
+    return await _repository.uploadPhoto(file);
+  }
 }
 
 final expensesViewModelProvider =

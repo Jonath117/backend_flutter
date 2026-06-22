@@ -49,4 +49,10 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<void> deleteExpense(String id) async {
     await _apiClient.deleteExpense(id);
   }
+
+  @override
+  Future<String> uploadPhoto(dynamic file) async {
+    final response = await _apiClient.uploadPhoto(file);
+    return response.url;
+  }
 }

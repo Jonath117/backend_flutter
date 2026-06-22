@@ -26,3 +26,13 @@ class ExpenseModel {
       _$ExpenseModelFromJson(json);
   Map<String, dynamic> toJson() => _$ExpenseModelToJson(this);
 }
+
+@JsonSerializable()
+class UploadResponse {
+  final String url;
+
+  UploadResponse({required this.url});
+
+  factory UploadResponse.fromJson(Map<String, dynamic> json) => _$UploadResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$UploadResponseToJson(this);
+}

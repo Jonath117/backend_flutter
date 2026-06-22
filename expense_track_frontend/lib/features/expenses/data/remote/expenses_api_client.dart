@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
+import 'dart:io';
 import '../models/expense_model.dart';
 
 part 'expenses_api_client.g.dart';
@@ -22,4 +23,8 @@ abstract class ExpensesApiClient {
 
   @DELETE("/api/expenses/{id}")
   Future<void> deleteExpense(@Path("id") String id);
+
+  @POST("/api/expenses/upload-photo")
+  @MultiPart()
+  Future<UploadResponse> uploadPhoto(@Part(name: "file") File file);
 }
