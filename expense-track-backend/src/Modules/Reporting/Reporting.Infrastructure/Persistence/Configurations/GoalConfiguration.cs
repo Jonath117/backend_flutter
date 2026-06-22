@@ -14,9 +14,10 @@ public class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(g => g.UserId).IsRequired();
         builder.Property(g => g.Name).IsRequired().HasMaxLength(100);
         builder.Property(g => g.TargetAmount).HasColumnType("decimal(10,2)").IsRequired();
-        builder.Property(g => g.CurrentAmount).HasColumnType("decimal(10,2)").HasDefaultValue(0m);
+        builder.Property(g => g.CurrentAmount).HasColumnType("decimal(10,2)").HasDefaultValue(0m).IsRequired();
         builder.Property(g => g.TargetDate).HasColumnType("date");
         
-        builder.Property(g => g.CreatedAt).HasDefaultValueSql("now()");
+        builder.Property(g => g.CreatedAt).HasDefaultValueSql("now()").IsRequired();
+        builder.Property(g => g.UpdatedAt);
     }
 }

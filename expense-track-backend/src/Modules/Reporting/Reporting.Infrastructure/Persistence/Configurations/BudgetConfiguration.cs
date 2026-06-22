@@ -11,10 +11,15 @@ public class BudgetConfiguration : IEntityTypeConfiguration<Budget>
         builder.ToTable("budgets", schema: "reporting");
         builder.HasKey(b => b.Id);
         
+        builder.Property(b => b.UserId).IsRequired();
+        
         builder.Property(b => b.Name).IsRequired().HasMaxLength(100);
         builder.Property(b => b.MonthlyLimit).HasColumnType("decimal(10,2)").IsRequired();
         builder.Property(b => b.StartDate).HasColumnType("date").IsRequired();
         builder.Property(b => b.EndDate).HasColumnType("date");
+
+        builder.Property(b => b.CreatedAt).HasDefaultValueSql("now()").IsRequired();
+        builder.Property(b => b.UpdatedAt);
 
         builder.OwnsMany(b => b.BudgetCategories, bc =>
         {
