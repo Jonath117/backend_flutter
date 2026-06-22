@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../expenses/presentation/viewmodels/expenses_viewmodel.dart';
 import '../viewmodels/reporting_viewmodel.dart';
+import 'package:expense_track_frontend/core/utils/error_handler.dart';
+import 'package:finance_design_system/finance_design_system.dart';
 
 class ReportingDashboardView extends ConsumerWidget {
   const ReportingDashboardView({super.key});
@@ -123,18 +125,6 @@ class ReportingDashboardView extends ConsumerWidget {
                   final remaining = budget.monthlyLimit - spentAmount;
                   final isNegative = remaining < 0;
 
-                  final percentage = (spentAmount / budget.monthlyLimit).clamp(
-                    0.0,
-                    1.0,
-                  );
-                  Color progressColor = Colors.green;
-                  if (percentage >= 0.9) {
-                    progressColor = Colors.red;
-                    // ignore: curly_braces_in_flow_control_structures
-                  } else if (percentage >= 0.7)
-                    // ignore: curly_braces_in_flow_control_structures
-                    progressColor = Colors.orange;
-
                   final dateRangeStr = budget.endDate != null
                       ? '${dateFormat.format(budget.startDate)} - ${dateFormat.format(budget.endDate!)}'
                       : 'Desde ${dateFormat.format(budget.startDate)}';
@@ -193,11 +183,10 @@ class ReportingDashboardView extends ConsumerWidget {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value: percentage,
-                            color: progressColor,
-                            backgroundColor: Colors.grey.shade300,
-                            minHeight: 8,
+                          FinanceProgressBar(
+                            current: spentAmount,
+                            target: budget.monthlyLimit,
+                            reverseColors: true,
                           ),
                           const SizedBox(height: 8),
                           Row(
@@ -226,8 +215,18 @@ class ReportingDashboardView extends ConsumerWidget {
             loading: () => const SliverToBoxAdapter(
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (e, _) =>
-                SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
+            error: (e, _) => SliverToBoxAdapter(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    getFriendlyErrorMessage(e),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
+            ),
           ),
 
           SliverToBoxAdapter(
@@ -264,10 +263,6 @@ class ReportingDashboardView extends ConsumerWidget {
               return SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final goal = goals[index];
-                  final p = (goal.currentAmount / goal.targetAmount).clamp(
-                    0.0,
-                    1.0,
-                  );
 
                   return Card(
                     margin: const EdgeInsets.symmetric(
@@ -305,10 +300,10 @@ class ReportingDashboardView extends ConsumerWidget {
                             'Progreso: Bs ${goal.currentAmount.toStringAsFixed(2)} de Bs ${goal.targetAmount.toStringAsFixed(2)}',
                           ),
                           const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value: p,
-                            minHeight: 8,
-                            color: Colors.blue,
+                          FinanceProgressBar(
+                            current: goal.currentAmount,
+                            target: goal.targetAmount,
+                            reverseColors: false,
                           ),
                           const SizedBox(height: 16),
                           Row(
@@ -349,8 +344,18 @@ class ReportingDashboardView extends ConsumerWidget {
             loading: () => const SliverToBoxAdapter(
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (e, _) =>
-                SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
+            error: (e, _) => SliverToBoxAdapter(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    getFriendlyErrorMessage(e),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
+            ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
