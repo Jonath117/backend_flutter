@@ -1,4 +1,5 @@
 import 'package:expense_track_frontend/features/categories/presentation/viewmodels/categories_viewmodel.dart';
+import 'package:expense_track_frontend/features/expenses/data/models/expense_model.dart';
 import 'package:expense_track_frontend/features/expenses/presentation/viewmodels/expenses_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,96 +75,202 @@ class ExpensesListView extends ConsumerWidget {
                 if (filteredExpenses.isEmpty) {
                   return const Center(child: Text('No se encontraron gastos.'));
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  itemCount: filteredExpenses.length,
-                  itemBuilder: (context, index) {
-                    final expense = filteredExpenses[index];
 
-                    String categoryName = 'Sin categoría';
-                    categoriesState.maybeWhen(
-                      data: (cats) {
-                        final c = cats
-                            .where((c) => c.id == expense.categoryId)
-                            .firstOrNull;
-                        if (c != null) categoryName = c.name;
-                      },
-                      orElse: () {},
+                final sortedExpenses = List<ExpenseModel>.from(filteredExpenses)
+                  ..sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
+
+                final List<Widget> listItems = [];
+                final now = DateTime.now();
+                final todayStr = DateFormat('yyyy-MM-dd').format(now);
+                final yesterdayStr = DateFormat(
+                  'yyyy-MM-dd',
+                ).format(now.subtract(const Duration(days: 1)));
+
+                final Map<String, List<ExpenseModel>> byMonth = {};
+                for (var e in sortedExpenses) {
+                  final mKey = DateFormat(
+                    'MMMM yyyy',
+                    'es',
+                  ).format(e.expenseDate);
+                  final mKeyCap = mKey[0].toUpperCase() + mKey.substring(1);
+                  byMonth.putIfAbsent(mKeyCap, () => []).add(e);
+                }
+
+                for (var monthEntry in byMonth.entries) {
+                  final monthName = monthEntry.key;
+                  final monthExpenses = monthEntry.value;
+                  final monthTotal = monthExpenses.fold(
+                    0.0,
+                    (sum, e) => sum + e.amount,
+                  );
+
+                  listItems.add(
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 24,
+                        bottom: 8,
+                        left: 4,
+                        right: 4,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            monthName,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Bs. ${monthTotal.toStringAsFixed(2)}',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: Colors.grey.shade600),
+                          ),
+                          const Divider(),
+                        ],
+                      ),
+                    ),
+                  );
+
+                  final Map<String, List<ExpenseModel>> byDay = {};
+                  for (var e in monthExpenses) {
+                    final dKey = DateFormat('yyyy-MM-dd').format(e.expenseDate);
+                    byDay.putIfAbsent(dKey, () => []).add(e);
+                  }
+
+                  for (var dayEntry in byDay.entries) {
+                    final dKey = dayEntry.key;
+                    final dayExpenses = dayEntry.value;
+                    final dayTotal = dayExpenses.fold(
+                      0.0,
+                      (sum, e) => sum + e.amount,
                     );
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                      color: Theme.of(context).colorScheme.surface,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () {
-                          context.push('/expenses/detail', extra: expense);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.receipt_long,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                    String dayLabel;
+                    if (dKey == todayStr) {
+                      dayLabel = 'Hoy';
+                    } else if (dKey == yesterdayStr) {
+                      dayLabel = 'Ayer';
+                    } else {
+                      dayLabel = DateFormat(
+                        'dd MMM',
+                        'es',
+                      ).format(dayExpenses.first.expenseDate);
+                    }
+
+                    listItems.add(
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 16,
+                          bottom: 8,
+                          left: 8,
+                          right: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              dayLabel,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      expense.title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              '- Bs. ${dayTotal.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+
+                    for (var expense in dayExpenses) {
+                      String categoryName = 'Sin categoría';
+                      categoriesState.maybeWhen(
+                        data: (cats) {
+                          final c = cats
+                              .where((c) => c.id == expense.categoryId)
+                              .firstOrNull;
+                          if (c != null) categoryName = c.name;
+                        },
+                        orElse: () {},
+                      );
+
+                      listItems.add(
+                        Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                          color: Theme.of(context).colorScheme.surface,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              context.push('/expenses/detail', extra: expense);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
                                     ),
-                                    const SizedBox(height: 4),
-                                    Row(
+                                    child: Icon(
+                                      Icons.receipt_long,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          categoryName,
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 13,
+                                          expense.title,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
                                           ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        if (expense.images.isNotEmpty) ...[
-                                          const SizedBox(width: 6),
-                                          Icon(
-                                            Icons.image,
-                                            size: 14,
-                                            color: Colors.grey.shade500,
-                                          ),
-                                        ],
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              categoryName,
+                                              style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            if (expense.images.isNotEmpty) ...[
+                                              const SizedBox(width: 6),
+                                              Icon(
+                                                Icons.image,
+                                                size: 14,
+                                                color: Colors.grey.shade500,
+                                              ),
+                                            ],
+                                          ],
+                                        ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
+                                  ),
                                   Text(
                                     '- Bs ${expense.amount.toStringAsFixed(2)}',
                                     style: const TextStyle(
@@ -172,24 +279,23 @@ class ExpensesListView extends ConsumerWidget {
                                       color: Colors.redAccent,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    DateFormat.yMMMd(
-                                      'es',
-                                    ).format(expense.expenseDate),
-                                    style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 12,
-                                    ),
-                                  ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    }
+                  }
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  itemCount: listItems.length,
+                  itemBuilder: (context, index) => listItems[index],
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
