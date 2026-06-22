@@ -1,3 +1,5 @@
+using Expenses.Application.Interfaces;
+using Expenses.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Expenses.Infrastructure.Persistence;
@@ -10,6 +12,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<ExpensesDbContext>(options =>
             options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+
+        services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
         return services;
     }
