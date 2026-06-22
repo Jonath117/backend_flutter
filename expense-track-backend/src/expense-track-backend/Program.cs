@@ -88,6 +88,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseStaticFiles();
 app.UseCors("AllowAllLocal");
 
 app.UseAuthentication();
