@@ -35,6 +35,11 @@ class MainLayout extends StatelessWidget {
             selectedIcon: Icon(Icons.bar_chart),
             label: 'Reportes',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
         ],
       ),
     );

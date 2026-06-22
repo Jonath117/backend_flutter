@@ -13,6 +13,7 @@ import '../../features/expenses/data/models/expense_model.dart';
 import '../../features/reporting/presentation/views/reporting_dashboard_view.dart';
 import '../../features/reporting/presentation/views/create_budget_view.dart';
 import '../../features/reporting/presentation/views/create_goal_view.dart';
+import '../../features/identity/presentation/views/profile_view.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _sectionANavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'sectionANav',
@@ -22,6 +23,9 @@ final _sectionBNavigatorKey = GlobalKey<NavigatorState>(
 );
 final _sectionCNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'sectionCNav',
+);
+final _sectionDNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'sectionDNav',
 );
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -93,6 +97,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const CreateGoalView(),
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _sectionDNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileView(),
               ),
             ],
           ),
