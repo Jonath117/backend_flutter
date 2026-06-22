@@ -83,8 +83,11 @@ class ExpensesListView extends ConsumerWidget {
                         DateFormat.yMMMd('es').format(expense.expenseDate),
                       ),
                       trailing: Text(
-                        'Bs${expense.amount.toStringAsFixed(2)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        'Bs ${expense.amount.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       onTap: () {
                         context.push('/expenses/detail', extra: expense);

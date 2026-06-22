@@ -185,10 +185,10 @@ class ReportingDashboardView extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Gastado: \$${spentAmount.toStringAsFixed(2)}',
+                                'Gastado: Bs ${spentAmount.toStringAsFixed(2)}',
                               ),
                               Text(
-                                'Límite: \$${budget.monthlyLimit.toStringAsFixed(2)}',
+                                'Límite: Bs ${budget.monthlyLimit.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
@@ -207,7 +207,7 @@ class ReportingDashboardView extends ConsumerWidget {
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                '\$${remaining.toStringAsFixed(2)}',
+                                'Bs ${remaining.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: isNegative ? Colors.red : Colors.green,
@@ -302,7 +302,7 @@ class ReportingDashboardView extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Progreso: \$${goal.currentAmount.toStringAsFixed(2)} de \$${goal.targetAmount.toStringAsFixed(2)}',
+                            'Progreso: Bs ${goal.currentAmount.toStringAsFixed(2)} de Bs ${goal.targetAmount.toStringAsFixed(2)}',
                           ),
                           const SizedBox(height: 8),
                           LinearProgressIndicator(
