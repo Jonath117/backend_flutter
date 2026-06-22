@@ -1,4 +1,6 @@
+using Categories.Application.Interfaces;
 using Categories.Infrastructure.Persistence;
+using Categories.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,9 @@ public static class DependencyInjection
     {
         services.AddDbContext<CategoryDbContext>(options => 
             options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+        
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        
         return services;
     }
 }
