@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/routing/app_router.dart';
+import 'package:finance_design_system/finance_design_system.dart';
 
 class MainApp extends ConsumerWidget {
   const MainApp({super.key});
@@ -12,10 +13,7 @@ class MainApp extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Expense Tracker',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
+      theme: FinanceTheme.lightTheme,
       routerConfig: router,
     );
   }
