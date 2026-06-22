@@ -7,9 +7,26 @@ import '../../data/remote/auth_api_client.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-final dioProvider = Provider(
-  (ref) => Dio(BaseOptions(baseUrl: 'http://localhost:5024')),
-);
+final dioProvider = Provider<Dio>((ref) {
+  final dio = Dio(BaseOptions(baseUrl: 'http://localhost:5024'));
+  final secureStorage = ref.watch(secureStorageProvider);
+
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await secureStorage.read(key: 'jwt_token');
+
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+
+        return handler.next(options);
+      },
+    ),
+  );
+
+  return dio;
+});
 
 final secureStorageProvider = Provider((ref) => const FlutterSecureStorage());
 

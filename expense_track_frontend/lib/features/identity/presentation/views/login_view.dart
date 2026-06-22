@@ -1,6 +1,7 @@
 import 'package:expense_track_frontend/features/identity/presentation/views/register_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../viewmodels/auth_viewmodel.dart';
 import '../widgets/custom_text_field.dart';
@@ -42,7 +43,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 backgroundColor: Colors.green,
               ),
             );
-            // Aquí usarías GoRouter para ir a la pantalla de Gastos: context.go('/home');
+            context.go('/expenses');
           }
         },
       );
