@@ -17,5 +17,6 @@ public class IncomeConfiguration : IEntityTypeConfiguration<Income>
         builder.Property(i => i.IncomeDate).HasColumnType("date").IsRequired();
         
         builder.Property(i => i.CreatedAt).HasDefaultValueSql("now()");
+        builder.Property(i => i.UpdatedAt);
     }
 }
