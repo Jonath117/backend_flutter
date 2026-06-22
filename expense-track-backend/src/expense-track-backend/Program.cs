@@ -2,13 +2,11 @@ using System.Text;
 using Categories.Application;
 using Categories.Infrastructure;
 using DotNetEnv;
-using expense_track_backend.Persistence;
 using Expenses.Application;
 using Expenses.Infrastructure;
 using Identity.Application;
 using Identity.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Reporting.Application;
 using Reporting.Infrastructure;
@@ -51,10 +49,6 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
-
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
 builder.Services.AddIdentityInfrastructure(connectionString);
 builder.Services.AddCategoriesInfrastructure(connectionString);

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Expenses.Infrastructure.Migrations
 {
     [DbContext(typeof(ExpensesDbContext))]
-    [Migration("20260622063143_AddUpdatedAtToIncome")]
-    partial class AddUpdatedAtToIncome
+    [Migration("20260622112415_InitialExpenses")]
+    partial class InitialExpenses
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
