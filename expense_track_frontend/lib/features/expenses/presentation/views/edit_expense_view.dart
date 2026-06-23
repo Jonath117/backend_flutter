@@ -36,10 +36,10 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
     _amountController = TextEditingController(
       text: widget.expense.amount.toString(),
     );
-    _descriptionController = TextEditingController(
-      text: widget.expense.title,
-    );
-    _existingPhotoUrl = widget.expense.images.isNotEmpty ? widget.expense.images.first : null;
+    _descriptionController = TextEditingController(text: widget.expense.title);
+    _existingPhotoUrl = widget.expense.images.isNotEmpty
+        ? widget.expense.images.first
+        : null;
     _selectedDate = widget.expense.expenseDate;
     _selectedCategoryId = widget.expense.categoryId;
   }
@@ -76,6 +76,13 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
     }
   }
 
+  void _removeImage() {
+    setState(() {
+      _selectedImage = null;
+      _existingPhotoUrl = null;
+    });
+  }
+
   void _showFullImage(BuildContext context, String? networkUrl, File? file) {
     showDialog(
       context: context,
@@ -89,7 +96,7 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
               panEnabled: true,
               minScale: 0.5,
               maxScale: 4,
-              child: networkUrl != null 
+              child: networkUrl != null
                   ? Image.network(networkUrl, fit: BoxFit.contain)
                   : Image.file(file!, fit: BoxFit.contain),
             ),
@@ -97,7 +104,12 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
               right: 0,
               top: 0,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30, shadows: [Shadow(color: Colors.black, blurRadius: 10)]),
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.white,
+                  size: 30,
+                  shadows: [Shadow(color: Colors.black, blurRadius: 10)],
+                ),
                 onPressed: () => Navigator.of(ctx).pop(),
               ),
             ),
@@ -117,7 +129,9 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
       try {
         String? newPhotoUrl;
         if (_selectedImage != null) {
-          newPhotoUrl = await ref.read(expensesViewModelProvider.notifier).uploadPhoto(_selectedImage!);
+          newPhotoUrl = await ref
+              .read(expensesViewModelProvider.notifier)
+              .uploadPhoto(_selectedImage!);
         }
 
         await ref
@@ -135,7 +149,12 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(getFriendlyErrorMessage(e)), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getFriendlyErrorMessage(e)),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       } finally {
         if (mounted) {
@@ -231,39 +250,65 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(_selectedImage == null && _existingPhotoUrl == null
-                        ? 'Sin foto adjunta' 
-                        : _existingPhotoUrl != null 
-                            ? 'Foto existente adjunta' 
-                            : 'Foto seleccionada: ${_selectedImage!.name}'),
+                    child: Text(
+                      _selectedImage == null && _existingPhotoUrl == null
+                          ? 'Sin foto adjunta'
+                          : _existingPhotoUrl != null
+                          ? 'Foto existente adjunta'
+                          : 'Foto seleccionada: ${_selectedImage!.name}',
+                    ),
                   ),
+                  if (_selectedImage != null || _existingPhotoUrl != null)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      tooltip: 'Quitar foto',
+                      onPressed: _removeImage,
+                    ),
+
                   TextButton.icon(
                     icon: const Icon(Icons.image),
                     label: const Text('Subir Foto'),
                     onPressed: _pickImage,
-                  )
+                  ),
                 ],
               ),
               if (_selectedImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: GestureDetector(
-                    onTap: () => _showFullImage(context, kIsWeb ? _selectedImage!.path : null, kIsWeb ? null : File(_selectedImage!.path)),
-                    child: kIsWeb 
-                        ? Image.network(_selectedImage!.path, height: 150, fit: BoxFit.cover)
-                        : Image.file(File(_selectedImage!.path), height: 150, fit: BoxFit.cover),
+                    onTap: () => _showFullImage(
+                      context,
+                      kIsWeb ? _selectedImage!.path : null,
+                      kIsWeb ? null : File(_selectedImage!.path),
+                    ),
+                    child: kIsWeb
+                        ? Image.network(
+                            _selectedImage!.path,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(_selectedImage!.path),
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 )
               else if (_existingPhotoUrl != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: GestureDetector(
-                    onTap: () => _showFullImage(context, _existingPhotoUrl, null),
-                    child: Image.network(_existingPhotoUrl!, height: 150, fit: BoxFit.cover),
+                    onTap: () =>
+                        _showFullImage(context, _existingPhotoUrl, null),
+                    child: Image.network(
+                      _existingPhotoUrl!,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               const SizedBox(height: 32),
-              _isUploading 
+              _isUploading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
                       onPressed: _submit,

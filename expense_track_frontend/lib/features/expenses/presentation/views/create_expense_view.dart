@@ -57,6 +57,12 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
     }
   }
 
+  void _removeImage() {
+    setState(() {
+      _selectedImage = null;
+    });
+  }
+
   void _showFullImage(BuildContext context, String? networkUrl, File? file) {
     showDialog(
       context: context,
@@ -70,7 +76,7 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
               panEnabled: true,
               minScale: 0.5,
               maxScale: 4,
-              child: networkUrl != null 
+              child: networkUrl != null
                   ? Image.network(networkUrl, fit: BoxFit.contain)
                   : Image.file(file!, fit: BoxFit.contain),
             ),
@@ -78,7 +84,12 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
               right: 0,
               top: 0,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 30, shadows: [Shadow(color: Colors.black, blurRadius: 10)]),
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.white,
+                  size: 30,
+                  shadows: [Shadow(color: Colors.black, blurRadius: 10)],
+                ),
                 onPressed: () => Navigator.of(ctx).pop(),
               ),
             ),
@@ -117,9 +128,12 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getFriendlyErrorMessage(e)), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getFriendlyErrorMessage(e)),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       } finally {
         if (mounted) {
@@ -223,6 +237,12 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
                           : 'Foto seleccionada: ${_selectedImage!.name}',
                     ),
                   ),
+                  if (_selectedImage != null)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      tooltip: 'Quitar foto',
+                      onPressed: _removeImage,
+                    ),
                   TextButton.icon(
                     icon: const Icon(Icons.image),
                     label: const Text('Subir Foto'),
@@ -234,10 +254,22 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: GestureDetector(
-                    onTap: () => _showFullImage(context, kIsWeb ? _selectedImage!.path : null, kIsWeb ? null : File(_selectedImage!.path)),
-                    child: kIsWeb 
-                        ? Image.network(_selectedImage!.path, height: 150, fit: BoxFit.cover)
-                        : Image.file(File(_selectedImage!.path), height: 150, fit: BoxFit.cover),
+                    onTap: () => _showFullImage(
+                      context,
+                      kIsWeb ? _selectedImage!.path : null,
+                      kIsWeb ? null : File(_selectedImage!.path),
+                    ),
+                    child: kIsWeb
+                        ? Image.network(
+                            _selectedImage!.path,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(_selectedImage!.path),
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               const SizedBox(height: 32),
