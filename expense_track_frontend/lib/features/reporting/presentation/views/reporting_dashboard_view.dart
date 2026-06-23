@@ -148,7 +148,10 @@ class ReportingDashboardView extends ConsumerWidget {
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    child: Padding(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => context.push('/reports/budgets/detail', extra: budget),
+                      child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,6 +224,7 @@ class ReportingDashboardView extends ConsumerWidget {
                           ),
                         ],
                       ),
+                    ),
                     ),
                   );
                 }, childCount: budgets.length),

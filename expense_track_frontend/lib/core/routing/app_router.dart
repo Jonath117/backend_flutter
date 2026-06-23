@@ -13,6 +13,8 @@ import '../../features/expenses/data/models/expense_model.dart';
 import '../../features/reporting/presentation/views/reporting_dashboard_view.dart';
 import '../../features/reporting/presentation/views/create_budget_view.dart';
 import '../../features/reporting/presentation/views/create_goal_view.dart';
+import '../../features/reporting/presentation/views/budget_detail_view.dart';
+import '../../features/reporting/data/models/budget_model.dart';
 import '../../features/reporting/presentation/views/advanced_charts_view.dart';
 import '../../features/identity/presentation/views/profile_view.dart';
 import '../../features/settings/presentation/views/settings_view.dart';
@@ -93,6 +95,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'budgets/create',
                     builder: (context, state) => const CreateBudgetView(),
+                  ),
+                  GoRoute(
+                    path: 'budgets/detail',
+                    builder: (context, state) {
+                      final budget = state.extra as BudgetModel;
+                      return BudgetDetailView(budget: budget);
+                    },
                   ),
                   GoRoute(
                     path: 'goals/create',
