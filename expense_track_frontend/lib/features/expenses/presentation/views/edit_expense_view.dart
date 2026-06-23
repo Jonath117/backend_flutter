@@ -10,6 +10,7 @@ import 'package:expense_track_frontend/core/utils/error_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 
 class EditExpenseView extends ConsumerStatefulWidget {
   final ExpenseModel expense;
@@ -65,15 +66,98 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = pickedFile;
-        _existingPhotoUrl = null;
-      });
+  Future<void> _showPickerOptions() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Galería'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Cámara'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    if (!kIsWeb) {
+      Permission permission = source == ImageSource.camera
+          ? Permission.camera
+          : (Platform.isAndroid ? Permission.storage : Permission.photos);
+          
+      PermissionStatus status = await permission.request();
+
+      if (status.isPermanentlyDenied) {
+        _showSettingsDialog();
+        return;
+      } else if (!status.isGranted && !status.isLimited) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Permiso denegado')),
+          );
+        }
+        return;
+      }
     }
+
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = pickedFile;
+          _existingPhotoUrl = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al abrir: $e')),
+        );
+      }
+    }
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Permisos requeridos'),
+        content: const Text(
+          'Por favor, habilita los permisos desde la configuración de tu dispositivo para adjuntar imágenes.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              openAppSettings();
+              Navigator.pop(ctx);
+            },
+            child: const Text('Abrir Configuración'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _removeImage() {
@@ -268,7 +352,7 @@ class _EditExpenseViewState extends ConsumerState<EditExpenseView> {
                   TextButton.icon(
                     icon: const Icon(Icons.image),
                     label: const Text('Subir Foto'),
-                    onPressed: _pickImage,
+                    onPressed: _showPickerOptions,
                   ),
                 ],
               ),
