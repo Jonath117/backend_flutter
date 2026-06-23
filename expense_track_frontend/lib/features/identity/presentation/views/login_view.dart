@@ -32,9 +32,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
     ref.listen<AsyncValue>(authViewModelProvider, (_, state) {
       state.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getFriendlyErrorMessage(error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(getFriendlyErrorMessage(error))),
+          );
         },
         data: (_) {
           if (state.isLoading == false && state.hasError == false) {
@@ -52,63 +52,68 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Expense Tracker')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.account_balance_wallet,
-              size: 80,
-              color: Colors.blue,
-            ),
-            const SizedBox(height: 32),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.account_balance_wallet,
+                size: 80,
+                color: Colors.blue,
+              ),
+              const SizedBox(height: 32),
 
-            CustomTextField(
-              label: 'Correo Electrónico',
-              controller: _emailController,
-            ),
-            CustomTextField(
-              label: 'Contraseña',
-              controller: _passwordController,
-              obscureText: true,
-            ),
+              CustomTextField(
+                label: 'Correo Electrónico',
+                controller: _emailController,
+              ),
+              CustomTextField(
+                label: 'Contraseña',
+                controller: _passwordController,
+                obscureText: true,
+              ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: authState.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: () {
-                        ref
-                            .read(authViewModelProvider.notifier)
-                            .login(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
-                      },
-                      child: const Text(
-                        'Iniciar Sesión',
-                        style: TextStyle(fontSize: 18),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: authState.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ElevatedButton(
+                        onPressed: () {
+                          ref
+                              .read(authViewModelProvider.notifier)
+                              .login(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                        },
+                        child: const Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(fontSize: 18),
+                        ),
                       ),
+              ),
+
+              const SizedBox(height: 20.0),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterView(),
                     ),
-            ),
-
-            SizedBox(height: 20.0),
-
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegisterView()),
-                );
-              },
-              child: const Text('¿No tienes cuenta? Registrate aqui'),
-            ),
-          ],
+                  );
+                },
+                child: const Text('¿No tienes cuenta? Registrate aqui'),
+              ),
+            ],
+          ),
         ),
       ),
     );
