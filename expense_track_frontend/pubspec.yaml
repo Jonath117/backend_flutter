@@ -21,6 +21,7 @@ dependencies:
   finance_design_system:
     path: ../../finance_design_system
   jwt_decoder: ^2.0.1
+  shared_preferences: ^2.5.5
 
 
 dev_dependencies:
