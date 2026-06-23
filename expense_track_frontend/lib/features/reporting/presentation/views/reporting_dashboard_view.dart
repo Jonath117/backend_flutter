@@ -6,6 +6,7 @@ import '../../../expenses/presentation/viewmodels/expenses_viewmodel.dart';
 import '../viewmodels/reporting_viewmodel.dart';
 import 'package:expense_track_frontend/core/utils/error_handler.dart';
 import 'package:finance_design_system/finance_design_system.dart';
+import 'package:expense_track_frontend/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 
 class ReportingDashboardView extends ConsumerWidget {
   const ReportingDashboardView({super.key});
@@ -59,6 +60,10 @@ class ReportingDashboardView extends ConsumerWidget {
     final budgetsState = ref.watch(budgetsViewModelProvider);
     final goalsState = ref.watch(goalsViewModelProvider);
     final expensesState = ref.watch(expensesViewModelProvider);
+    final currency = ref.watch(settingsViewModelProvider).maybeWhen(
+      data: (s) => s.currency,
+      orElse: () => 'Bs.',
+    );
 
     final dateFormat = DateFormat.yMMMd('es');
 
@@ -175,10 +180,10 @@ class ReportingDashboardView extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Gastado: Bs ${spentAmount.toStringAsFixed(2)}',
+                                'Gastado: $currency ${spentAmount.toStringAsFixed(2)}',
                               ),
                               Text(
-                                'Límite: Bs ${budget.monthlyLimit.toStringAsFixed(2)}',
+                                'Límite: $currency ${budget.monthlyLimit.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
@@ -196,7 +201,7 @@ class ReportingDashboardView extends ConsumerWidget {
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'Bs ${remaining.toStringAsFixed(2)}',
+                                '$currency ${remaining.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: isNegative ? Colors.red : Colors.green,
@@ -297,7 +302,7 @@ class ReportingDashboardView extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Progreso: Bs ${goal.currentAmount.toStringAsFixed(2)} de Bs ${goal.targetAmount.toStringAsFixed(2)}',
+                            'Progreso: $currency ${goal.currentAmount.toStringAsFixed(2)} de $currency ${goal.targetAmount.toStringAsFixed(2)}',
                           ),
                           const SizedBox(height: 8),
                           FinanceProgressBar(

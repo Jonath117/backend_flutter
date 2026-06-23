@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_track_frontend/core/utils/error_handler.dart';
+import 'package:expense_track_frontend/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 
 class ExpenseDetailView extends ConsumerWidget {
   final ExpenseModel expense;
@@ -15,6 +16,10 @@ class ExpenseDetailView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesState = ref.watch(categoriesViewModelProvider);
+    final currency = ref.watch(settingsViewModelProvider).maybeWhen(
+      data: (s) => s.currency,
+      orElse: () => 'Bs.',
+    );
 
     String categoryName = 'Loading...';
     categoriesState.whenData((categories) {
@@ -100,7 +105,7 @@ class ExpenseDetailView extends ConsumerWidget {
               ),
             const SizedBox(height: 24),
             Text(
-              'Bs ${expense.amount.toStringAsFixed(2)}',
+              '$currency ${expense.amount.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,

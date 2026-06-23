@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_track_frontend/core/utils/error_handler.dart';
+import 'package:expense_track_frontend/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 
 class ExpensesListView extends ConsumerWidget {
   const ExpensesListView({super.key});
@@ -15,6 +16,10 @@ class ExpensesListView extends ConsumerWidget {
     final expensesState = ref.watch(expensesViewModelProvider);
     final filteredExpenses = ref.watch(filteredExpensesProvider);
     final categoriesState = ref.watch(categoriesViewModelProvider);
+    final currency = ref.watch(settingsViewModelProvider).maybeWhen(
+      data: (s) => s.currency,
+      orElse: () => 'Bs.',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Gastos')),
@@ -121,9 +126,10 @@ class ExpensesListView extends ConsumerWidget {
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'Bs. ${monthTotal.toStringAsFixed(2)}',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(color: Colors.grey.shade600),
+                            '$currency ${monthTotal.toStringAsFixed(2)}',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Colors.grey.shade600,
+                                ),
                           ),
                           const Divider(),
                         ],
@@ -176,7 +182,7 @@ class ExpensesListView extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              '- Bs. ${dayTotal.toStringAsFixed(2)}',
+                              '- $currency ${dayTotal.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey,
@@ -272,7 +278,7 @@ class ExpensesListView extends ConsumerWidget {
                                     ),
                                   ),
                                   Text(
-                                    '- Bs ${expense.amount.toStringAsFixed(2)}',
+                                    '- $currency ${expense.amount.toStringAsFixed(2)}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 16,
