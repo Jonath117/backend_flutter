@@ -146,6 +146,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         builder: (context, state) => const SettingsView(),
       ),
+      GoRoute(
+        path: '/nuevo',
+        redirect: (context, state) => '/expenses/create',
+      ),
     ],
   );
 });
