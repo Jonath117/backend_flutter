@@ -68,7 +68,16 @@ class ReportingDashboardView extends ConsumerWidget {
     final dateFormat = DateFormat.yMMMd('es');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Reportes y Presupuestos')),
+      appBar: AppBar(
+        title: const Text('Reportes y Presupuestos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.pie_chart),
+            tooltip: 'Gráficos Avanzados',
+            onPressed: () => context.push('/reports/charts'),
+          ),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(

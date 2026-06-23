@@ -13,6 +13,7 @@ import '../../features/expenses/data/models/expense_model.dart';
 import '../../features/reporting/presentation/views/reporting_dashboard_view.dart';
 import '../../features/reporting/presentation/views/create_budget_view.dart';
 import '../../features/reporting/presentation/views/create_goal_view.dart';
+import '../../features/reporting/presentation/views/advanced_charts_view.dart';
 import '../../features/identity/presentation/views/profile_view.dart';
 import '../../features/settings/presentation/views/settings_view.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -96,6 +97,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'goals/create',
                     builder: (context, state) => const CreateGoalView(),
+                  ),
+                  GoRoute(
+                    path: 'charts',
+                    builder: (context, state) => const AdvancedChartsView(),
                   ),
                 ],
               ),
