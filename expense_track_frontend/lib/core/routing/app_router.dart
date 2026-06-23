@@ -58,14 +58,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'edit',
                     builder: (context, state) {
-                      final expense = state.extra as ExpenseModel;
+                      final extra = state.extra;
+                      final expense = extra is ExpenseModel 
+                          ? extra 
+                          : ExpenseModel.fromJson(Map<String, dynamic>.from(extra as Map));
                       return EditExpenseView(expense: expense);
                     },
                   ),
                   GoRoute(
                     path: 'detail',
                     builder: (context, state) {
-                      final expense = state.extra as ExpenseModel;
+                      final extra = state.extra;
+                      final expense = extra is ExpenseModel 
+                          ? extra 
+                          : ExpenseModel.fromJson(Map<String, dynamic>.from(extra as Map));
                       return ExpenseDetailView(expense: expense);
                     },
                   ),
@@ -99,7 +105,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'budgets/detail',
                     builder: (context, state) {
-                      final budget = state.extra as BudgetModel;
+                      final extra = state.extra;
+                      final budget = extra is BudgetModel
+                          ? extra
+                          : BudgetModel.fromJson(Map<String, dynamic>.from(extra as Map));
                       return BudgetDetailView(budget: budget);
                     },
                   ),
