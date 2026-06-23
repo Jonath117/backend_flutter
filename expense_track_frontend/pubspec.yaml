@@ -19,7 +19,9 @@ dependencies:
   image_picker: ^1.2.2
   http_parser: ^4.1.2
   finance_design_system:
-    path: ../../finance_design_system
+    git:
+      url: https://github.com/Jonath117/DesignSystemFinance.git
+      ref: v1.0.0
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.5.5
   fl_chart: ^1.2.0

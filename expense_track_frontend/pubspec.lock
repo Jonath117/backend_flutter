@@ -276,9 +276,11 @@ packages:
   finance_design_system:
     dependency: "direct main"
     description:
-      path: "../../finance_design_system"
-      relative: true
-    source: path
+      path: "."
+      ref: "v1.0.0"
+      resolved-ref: da4c63480bc622955b700bb3677f2b51e1bc159c
+      url: "https://github.com/Jonath117/DesignSystemFinance.git"
+    source: git
     version: "0.0.1"
   fixnum:
     dependency: transitive

@@ -18,6 +18,7 @@ import '../../features/reporting/data/models/budget_model.dart';
 import '../../features/reporting/presentation/views/advanced_charts_view.dart';
 import '../../features/identity/presentation/views/profile_view.dart';
 import '../../features/settings/presentation/views/settings_view.dart';
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _sectionANavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'sectionANav',
@@ -59,9 +60,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: 'edit',
                     builder: (context, state) {
                       final extra = state.extra;
-                      final expense = extra is ExpenseModel 
-                          ? extra 
-                          : ExpenseModel.fromJson(Map<String, dynamic>.from(extra as Map));
+                      final expense = extra is ExpenseModel
+                          ? extra
+                          : ExpenseModel.fromJson(
+                              Map<String, dynamic>.from(extra as Map),
+                            );
                       return EditExpenseView(expense: expense);
                     },
                   ),
@@ -69,9 +72,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: 'detail',
                     builder: (context, state) {
                       final extra = state.extra;
-                      final expense = extra is ExpenseModel 
-                          ? extra 
-                          : ExpenseModel.fromJson(Map<String, dynamic>.from(extra as Map));
+                      final expense = extra is ExpenseModel
+                          ? extra
+                          : ExpenseModel.fromJson(
+                              Map<String, dynamic>.from(extra as Map),
+                            );
                       return ExpenseDetailView(expense: expense);
                     },
                   ),
@@ -108,7 +113,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       final extra = state.extra;
                       final budget = extra is BudgetModel
                           ? extra
-                          : BudgetModel.fromJson(Map<String, dynamic>.from(extra as Map));
+                          : BudgetModel.fromJson(
+                              Map<String, dynamic>.from(extra as Map),
+                            );
                       return BudgetDetailView(budget: budget);
                     },
                   ),
