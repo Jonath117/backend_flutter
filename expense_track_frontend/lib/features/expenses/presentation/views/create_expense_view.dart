@@ -80,22 +80,33 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
 
   Future<void> _pickImage(ImageSource source) async {
     if (!kIsWeb) {
-      Permission permission = source == ImageSource.camera
-          ? Permission.camera
-          : (Platform.isAndroid ? Permission.storage : Permission.photos);
-          
-      PermissionStatus status = await permission.request();
-
-      if (status.isPermanentlyDenied) {
-        _showSettingsDialog();
-        return;
-      } else if (!status.isGranted && !status.isLimited) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Permiso denegado')),
-          );
+      if (source == ImageSource.camera) {
+        PermissionStatus status = await Permission.camera.request();
+        if (status.isPermanentlyDenied) {
+          _showSettingsDialog();
+          return;
+        } else if (!status.isGranted && !status.isLimited) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Permiso de cámara denegado')),
+            );
+          }
+          return;
         }
-        return;
+      } else if (Platform.isIOS) {
+        // En iOS si se requiere permiso explicito para la galeria
+        PermissionStatus status = await Permission.photos.request();
+        if (status.isPermanentlyDenied) {
+          _showSettingsDialog();
+          return;
+        } else if (!status.isGranted && !status.isLimited) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Permiso de fotos denegado')),
+            );
+          }
+          return;
+        }
       }
     }
 
@@ -109,9 +120,9 @@ class _CreateExpenseViewState extends ConsumerState<CreateExpenseView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al abrir: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al abrir: $e')));
       }
     }
   }
