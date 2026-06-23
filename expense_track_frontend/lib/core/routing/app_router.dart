@@ -14,6 +14,7 @@ import '../../features/reporting/presentation/views/reporting_dashboard_view.dar
 import '../../features/reporting/presentation/views/create_budget_view.dart';
 import '../../features/reporting/presentation/views/create_goal_view.dart';
 import '../../features/identity/presentation/views/profile_view.dart';
+import '../../features/settings/presentation/views/settings_view.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _sectionANavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'sectionANav',
@@ -110,6 +111,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsView(),
       ),
     ],
   );

@@ -97,6 +97,15 @@ class ProfileView extends ConsumerWidget {
                         title: const Text('ID de Usuario'),
                         subtitle: Text(user.id, style: const TextStyle(fontSize: 12)),
                       ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.settings_outlined),
+                        title: const Text('Configuración'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          context.push('/settings');
+                        },
+                      ),
                     ],
                   ),
                 ),
